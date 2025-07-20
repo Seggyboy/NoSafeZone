@@ -1,0 +1,5 @@
+c:\Users\samua\OneDrive\Documents\s&box projects\no_safe_zone\Code\obj\Debug\no_safe_zone.csproj.AssemblyReference.cache
+c:\Users\samua\OneDrive\Documents\s&box projects\no_safe_zone\Code\obj\Debug\no_safe_zone.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\samua\OneDrive\Documents\s&box projects\no_safe_zone\Code\obj\Debug\no_safe_zone.AssemblyInfoInputs.cache
+c:\Users\samua\OneDrive\Documents\s&box projects\no_safe_zone\Code\obj\Debug\no_safe_zone.AssemblyInfo.cs
+c:\Users\samua\OneDrive\Documents\s&box projects\no_safe_zone\Code\obj\Debug\no_safe_zone.csproj.CoreCompileInputs.cache
