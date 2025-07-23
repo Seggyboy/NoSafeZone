@@ -7,7 +7,7 @@ using static Sandbox.Citizen.CitizenAnimationHelper;
 public sealed class Board : Component
 {
 	
-
+	// random comment
 	public List<int> BuildingIDs = new List<int>(); // Store building IDs to sort buildings for logic and such
 
 	public Dictionary<int, Tile[,]> World = new Dictionary<int, Tile[,]>();
@@ -605,7 +605,7 @@ public void GenerateBuildings()
 
 			if ( tile.Wall && !tile.Door )
 			{
-				GenerateWall( tile ); // Now it’s safe: doorTile will be skipped
+				GenerateWall( tile ); // Now itï¿½s safe: doorTile will be skipped
 			}
 			else if ( tile.Door )
 			{
