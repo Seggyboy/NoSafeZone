@@ -1,0 +1,238 @@
+﻿/* === TRAVELER MAIN CONTAINER === */
+.traveler {
+	background-color: black;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	font-family: 'Franklin Gothic Medium', sans-serif;
+}
+
+/* === SCROLLING BACKGROUND === */
+.background-image {
+	width: 100%;
+	height: 100%;
+	background-image: url("ui/traveler/travelbackground.png");
+	background-size: cover;
+	background-repeat: repeat-x;
+	background-position: top center;
+	margin: 0;
+	padding: 10px;
+	animation: bg-scroll 30s linear infinite;
+	pointer-events: none;
+}
+
+@keyframes bg-scroll {
+	0% { background-position-x: 0; }
+	100% { background-position-x: 1920px; }
+}
+
+
+/* === STATUS BAR (TOP) === */
+.top-status-bar {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	padding: 12px 24px;
+	display: flex;
+	justify-content: space-between;
+	background-color: rgba(0, 0, 0, 0.5);
+	color: white;
+	font-size: 50px;
+	z-index: 10;
+}
+
+
+/* === BOTTOM INTERACTION PANEL === */
+.bottom-interaction {
+	position: absolute;
+	background-image: url("ui/traveler/ruggedlaptopclosed.png");
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	transform: translateX(-50%);
+	bottom: 10px;
+	left: 50%;
+	width: 25%;
+	height: 25%;
+	padding: 20px;
+	color: white;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	pointer-events: all;
+}
+
+.bottom-interaction:hover {
+	cursor: pointer;
+	filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8)) brightness(1.1);
+}
+
+.bottom-interaction .buttons {
+	margin-top: 10px;
+	display: flex;
+	gap: 16px;
+}
+
+.bottom-interaction button {
+	padding: 10px 20px;
+	background: #333;
+	color: white;
+	border: 1px solid #555;
+	cursor: pointer;
+}
+
+
+/* === VEHICLE CONTAINER & VEHICLES === */
+.vehicle-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: flex-end;
+	gap: 60px;
+	width: 100%;
+	max-width: 100%;
+	margin-bottom: 200px;
+}
+
+.vehicle {
+	z-index: 5;
+	pointer-events: all;
+	width: 640px;
+	height: 480px;
+	margin-top: 40px;
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+	filter: drop-shadow(3px 3px 2px rgba(0, 0, 0, 0.5));
+	animation: vehicle-bob 3s ease-in-out infinite;
+	transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.vehicle:hover {
+	cursor: pointer;
+	filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8)) brightness(1.1);
+	transform: scale(1.02);
+}
+
+@keyframes vehicle-bob {
+	0% { transform: translateY(0); }
+	25% { transform: translateY(-2px); }
+	50% { transform: translateY(-3px); }
+	75% { transform: translateY(-2px); }
+	100% { transform: translateY(0); }
+}
+
+.vehicle-1 {
+	background-image: url("sprites/soldiers/vehicles/lmvt.png");
+	animation-delay: 0s;
+}
+
+.vehicle-2 {
+	background-image: url("sprites/soldiers/vehicles/nosafezonehumvee.png");
+	animation-delay: 0.5s;
+}
+
+.vehicle-3 {
+	background-image: url("sprites/soldiers/vehicles/lmvt.png");
+	animation-delay: 1s;
+}
+
+
+/* === UNIT PANEL === */
+.unit-panel {
+	position: absolute;
+	top: 5%;
+	left: 5%;
+	width: 90%;
+	height: 90%;
+	background-color: rgba(0, 0, 0, 0.85);
+	color: white;
+	display: none;
+	flex-direction: column;
+	padding: 40px;
+	z-index: 20;
+	border: 2px solid rgba(255,255,255,0.15);
+	backdrop-filter: blur(4px);
+	overflow-y: scroll;
+	font-size: 24px;
+}
+
+.unit-panel.active {
+	display: flex;
+}
+
+.unit-panel h2 {
+	font-size: 36px;
+	margin-bottom: 20px;
+}
+
+/* Allow the inner list to scroll if it's long */
+.unit-list {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	padding-right: 10px;
+}
+
+/* Each unit item styled larger */
+.unit-item {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	background-color: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	padding: 18px;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.unit-item:hover {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Avatar and label larger */
+.unit-avatar {
+	width: 50px;
+	height: 50px;
+	border-radius: 6px;
+	object-fit: cover;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.unit-label {
+	font-size: 24px;
+}
+
+.unit-second-label {
+	margin-top: 30px;
+	margin-bottom: 10px;
+	font-size: 28px;
+	font-weight: bold;
+	border-bottom: 1px solid rgba(255,255,255,0.2);
+	padding-bottom: 5px;
+}
+
+.unit-list-close {
+	margin-top: auto;
+	text-align: right;
+}
+
+.unit-list-close .close-button {
+	padding: 8px 16px;
+	background-color: #600;
+	color: white;
+	border: none;
+	pointer-events: all;
+	cursor: pointer;
+	border-radius: 4px;
+	transition: background-color 0.2s ease;
+}
+
+.unit-list-close .close-button:hover {
+	background-color: #900;
+}
