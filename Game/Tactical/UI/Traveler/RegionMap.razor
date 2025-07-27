@@ -1,0 +1,176 @@
+@using Sandbox;
+@using System;
+@using Sandbox.UI;
+@inherits PanelComponent
+
+<root>
+	<div class="Toolbar">
+		<button @onclick="@SaveToFile">Save</button>
+		<button @onclick="@LoadFromFile">Load</button>
+		<button @onclick="@ConnectNodes">Connect Nodes</button>
+		<button @onclick="@ClearNodeSave">Clear Node Save</button>
+	</div>
+
+	<div class="MapContainer" @onclick="@HandleMouseDown">
+		<img src="ui/traveler/map.png" class="MapImage" />
+
+		@foreach (var node in Nodes)
+		{
+			<div class="NodeDot" style="left:@(node.Position.x)px; top:@(node.Position.y)px;"></div>
+		}
+
+		@for (int i = 0; i < Nodes.Count; i++)
+		{
+			var node = Nodes[i];
+			foreach (var neighborIndex in node.Neighbors)
+			{
+				if (neighborIndex <= i) continue; // prevent duplicate drawing
+				var neighbor = Nodes[neighborIndex];
+
+				var x1 = node.Position.x;
+				var y1 = node.Position.y;
+				var x2 = neighbor.Position.x;
+				var y2 = neighbor.Position.y;
+
+				var dx = x2 - x1;
+				var dy = y2 - y1;
+				var length = MathF.Sqrt(dx * dx + dy * dy);
+				var angle = MathF.Atan2(dy, dx) * (180 / MathF.PI); // degrees
+				string style = $"left:{x1}px; top:{y1}px; width:{length}px; transform: rotate({angle}deg);";
+				<div class="NodeLine" style="@style"></div>
+			}
+		}
+
+	</div>
+
+
+
+
+</root>
+
+
+
+@code
+{
+	[Property] public TownLoader TownLoader { get; set; } = null!;
+	protected override void OnUpdate()
+	{
+		//Log.Info(Mouse.Position);
+	}
+
+	[Property] public List<RegionNode> Nodes = new();
+	public int SelectedNodeIndex = -1;
+
+	public void SaveToFile()
+	{
+		var json = Json.Serialize(Nodes);
+		FileSystem.Data.WriteAllText("regions.json", json);
+		Log.Info("Saved regions.json");
+	}
+
+
+
+	void HandleMouseDown(PanelEvent e)
+	{
+
+
+
+		Log.Info("Mouse down event received."); 
+		if (e is MousePanelEvent mouse)
+		{
+			Vector2 pos = mouse.LocalPosition * Panel.ScaleFromScreen;
+			Log.Info(Panel.ScaleFromScreen);
+
+
+			Log.Info($"Clicked at {pos}");
+			Nodes.Add(new RegionNode
+				{
+					Name = $"Node {Nodes.Count}",
+					Position = pos,
+					Index = Nodes.Count,
+				});
+
+			SelectedNodeIndex = Nodes.Count - 1;
+		}
+
+
+
+		StateHasChanged();
+	}
+
+	void ConnectNodes()
+	{
+		var Towns = TownLoader.LoadTowns();
+		if (Towns == null || Towns.Count == 0)
+		{
+			Log.Error("No towns loaded, cannot connect nodes.");
+			return;
+		}
+
+		int neighborsToConnect = 3;
+		int maxConnections = 3;
+		var connectedPairs = new HashSet<(int, int)>();
+		foreach (var node in Nodes)
+		{
+			node.Neighbors.Clear();
+			var random = new Random();
+			var randomTown = Towns[random.Next(Towns.Count)];
+			node.Name = randomTown;
+		}
+
+		for (int i = 0; i < Nodes.Count; i++)
+		{
+			var current = Nodes[i];
+
+			// Build a list of index and distance pairs to other nodes
+			var distances = new List<(int index, float dist)>();
+
+			for (int j = 0; j < Nodes.Count; j++)
+			{
+				if (i == j) continue;
+				float distance = Vector2.DistanceBetween(current.Position, Nodes[j].Position);
+				distances.Add((j, distance));
+			}
+
+			// Sort by distance and take the closest N
+			distances.Sort((a, b) => a.dist.CompareTo(b.dist));
+			var closest = distances.Take(neighborsToConnect);
+
+			foreach (var (j, _) in closest)
+			{
+				if (current.Neighbors.Count >= maxConnections)
+					break;
+				var pair = (Math.Min(i, j), Math.Max(i, j));
+				if (!connectedPairs.Contains(pair))
+				{
+					connectedPairs.Add(pair);
+					current.Neighbors.Add(j);
+					Nodes[j].Neighbors.Add(i);
+				}
+			}
+		}
+		Log.Info("Connected nodes.");
+		StateHasChanged();
+	}
+
+	void ClearNodeSave()
+	{
+		Nodes.Clear();
+		var json = Json.Serialize(Nodes);
+		FileSystem.Data.WriteAllText("regions.json", json);
+		Log.Info("Cleared all nodes.");
+		StateHasChanged();
+	}
+
+	public void LoadFromFile()
+	{
+		if (!FileSystem.Data.FileExists("regions.json")) return;
+		Nodes = Json.Deserialize<List<RegionNode>>(FileSystem.Data.ReadAllText("regions.json"));
+		Log.Info($"Loaded {Nodes.Count} nodes.");
+
+	}
+
+	
+	
+
+}

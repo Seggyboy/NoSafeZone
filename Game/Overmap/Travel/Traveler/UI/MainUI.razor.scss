@@ -1,0 +1,108 @@
+﻿MainUI {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; // anchor to bottom
+    pointer-events: none; // UI click-through unless overridden inside
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+
+    .interaction-container {
+        pointer-events: all; // Enable interaction inside
+        width: 65vw;
+        max-width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+        padding: 10px 16px;
+        margin-bottom: 5vh; // separates from bottom
+    }
+
+    .interaction-item {
+        flex: 1 1 0;
+        margin: 0 8px;
+        background-color: #222;
+        color: #fff;
+        padding: 10px 16px;
+        border-radius: 5px;
+        text-align: center;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: #444;
+        }
+
+        &:active {
+            background-color: #666;
+        }
+    }
+
+    .interaction-label {
+        font-size: 24px;
+        font-weight: bold;
+        pointer-events: none;
+    }
+
+    .miles-tracker-container {
+        transform: scale(1.2);
+        gap: 12px;
+        position: absolute;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+        max-width: 80vw;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.6);
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+        border-radius: 10px;
+        padding: 12px 20px;
+
+
+        .destination-label {
+            flex: 1 1 0;
+            margin: 0 8px;
+            background-color: #222;
+            color: #fff;
+            padding: 10px 10px;
+            border-radius: 5px;
+            text-align: center;
+            transition: background-color 0.2s ease;
+        }
+    }
+
+    .resource-tracker-container {
+        transform: scale(1.2);
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        background-color: rgba(0, 0, 0, 0.6); // Match miles-tracker
+        padding: 12px 20px; // Match padding style
+        border-radius: 10px; // Match all corner radii
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.4); // Softer shadow for consistency
+        gap: 12px; // Slightly reduced for tighter visual alignment
+        transform: none; // Remove scale for consistency
+    }
+
+    .resource-label {
+        flex: 1 1 0;
+        margin: 0 8px;
+        background-color: #222;
+        color: #fff;
+        padding: 10px 10px;
+        border-radius: 5px;
+        text-align: center;
+        transition: background-color 0.2s ease;
+    }
+}

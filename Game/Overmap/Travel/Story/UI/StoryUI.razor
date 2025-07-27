@@ -1,0 +1,49 @@
+@using Sandbox
+@using Sandbox.UI
+@inherits PanelComponent
+@namespace Sandbox
+
+@if (ShouldShow && Event != null)
+{
+	<root class="event-popup">
+		<div class="popup-background">
+			<div class="popup-title">@Event.Name</div>
+			<div class="popup-description">@Event.Description</div>
+			<div class="popup-choices">
+				@foreach (var choice in Event.Choices)
+				{
+					<button @onclick="@(() => OnChoiceSelected(choice))">@choice.Text</button>
+				}
+			</div>
+		</div>
+	</root>
+}
+
+@code {
+	[Property] public StoryEvent Event { get; set; }
+	[Property] public bool ShouldShow { get; set; } = false;
+
+	protected override void OnEnabled()
+	{
+		TravelerEvents.StoryStartedEvent += ReceiveEvent;
+	}
+
+	protected override void OnDisabled()
+	{
+		TravelerEvents.StoryStartedEvent -= ReceiveEvent;
+	}
+
+	public void ReceiveEvent(StoryEvent evt)
+	{
+		Event = evt;
+		ShouldShow = true;
+	}
+
+	private void OnChoiceSelected(StoryChoice choice)
+	{
+		ShouldShow = false;
+		TravelerEvents.RaiseChoiceSelectedEvent(choice);
+	}
+
+	protected override int BuildHash() => System.HashCode.Combine(Event, ShouldShow);
+}

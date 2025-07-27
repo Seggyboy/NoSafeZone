@@ -1,0 +1,162 @@
+@using Sandbox;
+@using System;
+@using Sandbox.UI;
+@inherits PanelComponent
+@namespace Sandbox
+
+<root>
+
+
+	@if(ShouldDrawMap)
+	{
+		<div class="MapContainer" @onclick="@HandleMouseDown">
+			<div class="ZoomLayer">
+				<img src="ui/traveler/map.png" class="MapImage" style="width:@(100 * Zoom)%; height:@(100 * Zoom)%; left:@(PanOffset.x)px; top:@(PanOffset.y)px;" />
+
+				@foreach (var node in Nodes)
+				{
+
+					var isCurrent = node == Map.CurrentNode;
+					var isDestination = node == SelectedNode;
+					var color = node == HoveredNode? "blue": isDestination? "yellow": isCurrent? "green": "white";
+					<div class="NodeDot" style="left:@(node.Position.x * Zoom + PanOffset.x)px; top:@(node.Position.y * Zoom + PanOffset.y)px; background-color:@color;"></div>
+
+					<div class="NodeLabel" style="left:@(node.Position.x * Zoom + PanOffset.x)px; top:@(node.Position.y * Zoom + PanOffset.y - 10)px;">@(node.Name)</div>
+					<div class="NodeLabel" style="left:@(node.Position.x * Zoom + PanOffset.x)px; top:@(node.Position.y * Zoom + PanOffset.y - 40)px;">@(node.Index)</div>
+
+
+				}
+
+				@for (int i = 0; i < Nodes.Count; i++)
+				{
+					var node = Nodes[i];
+					foreach (var neighborIndex in node.Neighbors)
+					{
+						if (neighborIndex <= i) continue; // prevent duplicate drawing
+						var neighbor = Nodes[neighborIndex];
+
+						var x1 = node.Position.x * Zoom + PanOffset.x;
+						var y1 = node.Position.y * Zoom + PanOffset.y;
+						var x2 = neighbor.Position.x * Zoom + PanOffset.x;
+						var y2 = neighbor.Position.y * Zoom + PanOffset.y;
+
+						var dx = x2 - x1;
+						var dy = y2 - y1;
+						var length = MathF.Sqrt(dx * dx + dy * dy);
+
+						var angle = MathF.Atan2(dy, dx) * (180 / MathF.PI); // degrees
+						string style = $"left:{x1}px; top:{y1}px; width:{length}px; transform: rotate({angle}deg);";
+						<div class="NodeLine" style="@style"></div>
+					}
+				}
+			</div>
+		</div>
+
+
+	}
+
+
+
+
+
+
+
+</root>
+
+@code
+{
+	[Property] public TravelerMap Map { get; set; } = null;
+	[Property] public UIinputHandeler InHandler { get; set; } = null!;
+	public float Zoom => InHandler?.Zoom ?? 1.0f;
+	public List<RegionNode> Nodes => Map?.Nodes ?? new();
+	public List<RegionNode> DestinationNodes => Map?.DestinationNodes ?? new();
+	[Property] public RegionNode CurrentNode => Map?.CurrentNode;
+	[Property] public RegionNode SelectedNode => Map?.DestinationNode;
+	public Vector2 PanOffset => InHandler?.PanOffset ?? Vector2.Zero;
+	[Property] public bool ShouldDrawMap { get; set; } = false;
+	public RegionNode HoveredNode { get; set; } = null!;
+
+
+
+	protected override void OnEnabled()
+	{
+		Map = Scene.GetAllComponents<TravelerMap>().FirstOrDefault();
+		if (Map == null)
+		{
+			Log.Error("Map is not set in MapUI.");
+			return;
+		}
+
+
+
+	}
+
+
+	protected override void OnUpdate()
+	{
+		if (!ShouldDrawMap || Map == null)
+		{
+			return;
+		}
+		HandleHover();
+	}
+
+	public void HandleMouseDown(PanelEvent e)
+	{
+		if (e is MousePanelEvent mouse)
+		{
+			Vector2 pos = Mouse.Position * Panel.ScaleFromScreen;
+
+			// Reverse pan and zoom to match node's untransformed positions
+			Vector2 adjustedPos = (pos - PanOffset) / Zoom;
+			var node = Map.GetNodeAtPosition(adjustedPos, Zoom);
+			HandleSelectNode(node, adjustedPos);
+
+		}
+	}
+
+	public void HandleSelectNode(RegionNode node, Vector2 pos)
+	{
+
+
+		if (node != null)
+		{
+			if (node == CurrentNode)
+			{
+				return;
+			}
+			if (DestinationNodes.Any(n => n.Index == node.Index))
+			{
+
+				Map.SetDestination(node);
+			}
+
+			Log.Info($"Selected Node: {node.Name}");
+		}
+	}
+
+	public void HandleHover()
+	{
+		Vector2 pos = Mouse.Position * Panel.ScaleFromScreen;
+
+		// Same adjustment as above
+		Vector2 adjustedPos = (pos - PanOffset) / Zoom;
+
+		var node = Map.GetNodeAtPosition(adjustedPos, Zoom);
+		HoveredNode = node;
+	}
+
+	
+
+
+
+
+
+
+
+
+	/// <summary>
+	/// the hash determines if the system should be rebuilt. If it changes, it will be rebuilt
+	/// </summary>
+	protected override int BuildHash() => System.HashCode.Combine( Map, Zoom, PanOffset, ShouldDrawMap, SelectedNode, HoveredNode, CurrentNode );
+}

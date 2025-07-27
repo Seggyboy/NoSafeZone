@@ -1,0 +1,72 @@
+MapUI {
+    display: flex;
+    flex-direction: column; // vertical stacking
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    pointer-events: none;
+
+    .MapContainer {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+    }
+
+    .PannedLayer {
+        position: absolute;
+    }
+
+    .ZoomLayer {
+        transform-origin: top left; // important!
+        width: 100%;
+        height: 100%;
+    }
+
+    .NodeLabel {
+        position: absolute;
+        transform: translate(-50%, -100%);
+        font-size: 15px;
+        font-weight: bold;
+        color: white;
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; /* Creates a strong black outline */
+        pointer-events: none;
+        white-space: nowrap;
+        user-select: none;
+    }
+
+
+    .NodeDot {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: red;
+        transform: translate(-50%, -50%);
+        pointer-events: all; // allow interaction with the map
+    }
+
+    .NodeLine {
+        position: absolute;
+        height: 2px;
+        background-color: white;
+        transform-origin: left center;
+        transform: rotate(0deg) translateY(-50%);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .MapImage {
+        background-image: url('ui/traveler/map.png');
+        background-repeat: no-repeat;
+        background-size: 100% 100%; /* stretch to fill */
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+    }
+}

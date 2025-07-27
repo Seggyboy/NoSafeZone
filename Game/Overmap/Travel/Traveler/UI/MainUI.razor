@@ -1,0 +1,95 @@
+@using Sandbox;
+@using Sandbox.UI;
+@inherits PanelComponent
+@namespace Sandbox
+
+
+@if ( ShouldDrawHUD)
+{
+	<root>
+		<div class="interaction-container">
+			<div class="interaction-item" @onclick="@OpenMap">
+				<span class="interaction-label">Open Map</span>
+			</div>
+			<div class="interaction-item" @onclick="@MoveOut">
+				<span class="interaction-label">Step Off</span>
+			</div>
+			<div class="interaction-item" @onclick="@Stop">
+				<span class="interaction-label">Halt</span>
+			</div>
+			<div class="interaction-item" @onclick="@PatrolBase">
+				<span class="interaction-label">Establish Patrol Base</span>
+			</div>
+		</div>
+
+		<div class="miles-tracker-container">
+			<span class="destination-label">Destination: @(DestinationNode.Name)</span>
+			<span class="destination-label">Miles Remaining: @(MilesRemaining)</span>
+
+		</div>
+
+		<div class="resource-tracker-container">
+			<span class="resource-label">Fuel: @(Fuel) Gallons</span>
+			<span class="resource-label">Ammo: @(Ammo) Rounds</span>
+			<span class="resource-label">Food: @(Food) Lbs</span>
+			<span class="resource-label">Morale: @(Morale)% </span>
+		</div>
+	</root>
+
+}
+
+
+
+@code
+{
+
+	[Property] public bool ShouldDrawHUD { get; set; } = true;
+	[Property] public TravelerMap TravelerMap { get; set; } = null!;
+	[Property] public ResourceTracker ResourceTracker { get; set; } = null!;	
+	[Property] public Traveler Traveler { get; set; } = null!;
+	[Property] public RegionNode DestinationNode => TravelerMap?.DestinationNode ?? null;
+	[Property] public int MilesTraveled => (int) (Traveler?.MilesTraveled ?? 0);
+	[Property] public int MilesToTravel => Traveler?.TargetMiles ?? 0;
+	[Property] public int MilesRemaining = 0;
+	[Property] public float Fuel => ResourceTracker?.Fuel ?? 0;
+	[Property] public float Ammo => ResourceTracker?.Ammo ?? 0;
+	[Property] public float Food => ResourceTracker?.Food ?? 0;
+	[Property] public float Morale => ResourceTracker?.Morale ?? 0;
+
+	
+	protected override void OnUpdate()
+	{
+		if (ResourceTracker == null)
+		{
+			ResourceTracker = Scene.Components.GetAll<ResourceTracker>().FirstOrDefault();
+		}
+		MilesRemaining = MilesToTravel - MilesTraveled;
+
+	}
+	// We'll do everything through events in here.
+	public void Stop()
+	{
+		TravelerEvents.RaiseStopMoveConvoyEvent();
+	}
+
+	public void OpenMap()
+	{
+		TravelerEvents.RaiseOpenMapEvent();
+	}
+
+	public void MoveOut()
+	{
+		TravelerEvents.RaiseStartMoveConvoyEvent();
+	}
+
+	public void PatrolBase()
+	{
+		TravelerEvents.RaisePatrolBaseEvent();
+	}
+	protected override int BuildHash() => System.HashCode.Combine(ShouldDrawHUD, DestinationNode, MilesRemaining );
+	/// <summary>
+
+
+	
+	
+}
